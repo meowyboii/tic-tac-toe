@@ -44,6 +44,11 @@ const gameBoard = (function () {
     ["", "", ""],
   ];
   const updateGameBoard = (row, col) => {
+    if (gameBoard[row][col] !== "") {
+      alert("This space is already taken!");
+      gameManager.toggleCurrentTurn();
+      return;
+    }
     if (gameManager.getCurrentTurn()) {
       gameBoard[row][col] = "X";
     } else {
@@ -109,7 +114,7 @@ const gameBoard = (function () {
 
 const boards = document.querySelectorAll(".board");
 
-boards.forEach((board) => {
+boards.forEach((board, index) => {
   board.addEventListener("click", () => {
     const row = board.getAttribute("data-row");
     const col = board.getAttribute("data-col");
