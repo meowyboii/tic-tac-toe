@@ -1,0 +1,13 @@
+#board-game {
+  height: 50vh;
+  width: 50vh;
+  grid-template-rows: repeat(3, 1fr);
+  grid-template-columns: repeat(3, 1fr);
+  display: grid;
+  margin: 200px auto;
+  justify-self: center;
+}
+.board {
+  border: black solid 1px;
+  background-color: antiquewhite;
+}
