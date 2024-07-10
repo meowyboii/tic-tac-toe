@@ -1,19 +1,30 @@
+const createPlayer = function (name) {
+  let playerName = name;
+  const getPlayerName = () => playerName;
+  return { getPlayerName };
+};
+
 const gameManager = (function () {
+  //Create player objects
+  let player1 = "";
+  let player2 = "";
+  const initializePlayers = () => {
+    let name = prompt("Enter the name of player 1:");
+    player1 = createPlayer(name);
+    name = prompt("Enter the name of player 2:");
+    player2 = createPlayer(name);
+  };
   //If current turn is true, then it is player 1's turn
   let currentTurn = true;
   const getCurrentTurn = () => currentTurn;
+  const resetCurrentTurn = () => (currentTurn = true);
   const toggleCurrentTurn = () => {
     currentTurn = !currentTurn;
   };
 
-  let gameEnded = false;
-  const getGameEnded = () => gameEnded;
-  const toggleGameEnded = () => {
-    gameEnded = !gameEnded;
-  };
-
   let numberOfTurns = 9;
   const getNumberOfTurns = () => numberOfTurns;
+  const resetNumberOfTurns = () => (numberOfTurns = 9);
   const reduceNumberOfTurns = () => numberOfTurns--;
 
   const getWinner = () => {
@@ -21,19 +32,20 @@ const gameManager = (function () {
       return "no one! It's a draw!";
     }
     if (currentTurn) {
-      return "Player 1";
+      return player1.getPlayerName() ?? "Player 1";
     } else {
-      return "Player 2";
+      return player2.getPlayerName() ?? "Player 2";
     }
   };
   return {
+    initializePlayers,
     getCurrentTurn,
     toggleCurrentTurn,
-    getGameEnded,
-    toggleGameEnded,
+    resetCurrentTurn,
     getWinner,
     getNumberOfTurns,
     reduceNumberOfTurns,
+    resetNumberOfTurns,
   };
 })();
 
@@ -43,6 +55,14 @@ const gameBoard = (function () {
     ["", "", ""],
     ["", "", ""],
   ];
+  const getGameBoard = () => gameBoard;
+  const resetGameBoard = () => {
+    gameBoard = [
+      ["", "", ""],
+      ["", "", ""],
+      ["", "", ""],
+    ];
+  };
   const updateGameBoard = (row, col) => {
     if (gameBoard[row][col] !== "") {
       alert("This space is already taken!");
@@ -109,24 +129,57 @@ const gameBoard = (function () {
     }
     return false;
   };
-  return { updateGameBoard, checkWinner };
+  return { getGameBoard, updateGameBoard, resetGameBoard, checkWinner };
 })();
 
-const boards = document.querySelectorAll(".board");
+const displayController = (function () {
+  const displayGameBoard = () => {
+    const boards = document.querySelectorAll(".board");
+    const gameSpace = gameBoard.getGameBoard();
+    boards.forEach((board) => {
+      const row = board.getAttribute("data-row");
+      const col = board.getAttribute("data-col");
+      board.textContent = gameSpace[row][col];
+    });
+  };
+  const endGamePanel = document.getElementById("end-result");
+  const displayResults = () => {
+    endGamePanel.style.display = "flex";
+    const resultMessage = document.querySelector("#end-result h3");
+    resultMessage.textContent = `The game has ended! The winner is ${gameManager.getWinner()}`;
+  };
+  const removeResults = () => {
+    endGamePanel.style.display = "none";
+  };
+  return { displayGameBoard, displayResults, removeResults };
+})();
 
-boards.forEach((board, index) => {
-  board.addEventListener("click", () => {
-    const row = board.getAttribute("data-row");
-    const col = board.getAttribute("data-col");
-    if (gameManager.getGameEnded()) {
-      alert(`The game has ended! The winner is ${gameManager.getWinner()}`);
-    } else {
+const initializeGame = () => {
+  //Create player objects
+  gameManager.initializePlayers();
+  //Main click function for the game board
+  const boards = document.querySelectorAll(".board");
+  boards.forEach((board) => {
+    board.addEventListener("click", () => {
+      const row = board.getAttribute("data-row");
+      const col = board.getAttribute("data-col");
       gameBoard.updateGameBoard(row, col);
+      displayController.displayGameBoard();
       if (gameBoard.checkWinner()) {
-        gameManager.toggleGameEnded();
+        displayController.displayResults();
       } else {
         gameManager.toggleCurrentTurn();
       }
-    }
+    });
   });
+};
+const restart = () => {
+  displayController.removeResults();
+  gameManager.resetNumberOfTurns();
+  gameManager.resetCurrentTurn();
+  gameBoard.resetGameBoard();
+  displayController.displayGameBoard();
+};
+document.addEventListener("DOMContentLoaded", () => {
+  initializeGame();
 });

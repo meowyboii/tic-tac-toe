@@ -1,13 +1,50 @@
+* {
+  font-family: Montserrat sans-serif;
+}
+body {
+  margin: 0;
+}
+#end-result {
+  display: none;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  height: 100vh;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.726);
+  justify-content: center;
+  align-items: center;
+}
+#result {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  background-color: rgba(240, 248, 255, 0.911);
+  height: 12%;
+  width: 30%;
+  margin-top: 20px;
+  padding: 20px;
+}
+#result button {
+  font-size: 1rem;
+  padding: 5px;
+  width: 50%;
+}
 #board-game {
   height: 50vh;
   width: 50vh;
   grid-template-rows: repeat(3, 1fr);
   grid-template-columns: repeat(3, 1fr);
   display: grid;
-  margin: 200px auto;
-  justify-self: center;
+  margin: 10% auto;
 }
 .board {
   border: black solid 1px;
   background-color: antiquewhite;
+  text-align: center;
+  padding: 1vh;
+  font-size: 12vh;
 }
