@@ -1,18 +1,21 @@
 const createPlayer = function (name) {
   let playerName = name;
+  let score = 0;
   const getPlayerName = () => playerName;
-  return { getPlayerName };
+  const addScore = () => score++;
+  const getScore = () => score;
+  return { getPlayerName, addScore, getScore };
 };
 
 const gameManager = (function () {
+  let player1;
+  let player2;
   //Create player objects
-  let player1 = "";
-  let player2 = "";
   const initializePlayers = () => {
     let name = prompt("Enter the name of player 1:");
-    player1 = createPlayer(name);
+    player1 = createPlayer(name ?? "Player 1");
     name = prompt("Enter the name of player 2:");
-    player2 = createPlayer(name);
+    player2 = createPlayer(name ?? "Player 2");
   };
   //If current turn is true, then it is player 1's turn
   let currentTurn = true;
@@ -32,10 +35,15 @@ const gameManager = (function () {
       return "no one! It's a draw!";
     }
     if (currentTurn) {
-      return player1.getPlayerName() ?? "Player 1";
+      player1.addScore();
+      return player1.getPlayerName();
     } else {
-      return player2.getPlayerName() ?? "Player 2";
+      player2.addScore();
+      return player2.getPlayerName();
     }
+  };
+  const getPlayers = () => {
+    return { player1: player1, player2: player2 };
   };
   return {
     initializePlayers,
@@ -43,6 +51,7 @@ const gameManager = (function () {
     toggleCurrentTurn,
     resetCurrentTurn,
     getWinner,
+    getPlayers,
     getNumberOfTurns,
     reduceNumberOfTurns,
     resetNumberOfTurns,
@@ -143,10 +152,18 @@ const displayController = (function () {
     });
   };
   const endGamePanel = document.getElementById("end-result");
+
   const displayResults = () => {
     endGamePanel.style.display = "flex";
+
+    //Announce winner
     const resultMessage = document.querySelector("#end-result h3");
     resultMessage.textContent = `The game has ended! The winner is ${gameManager.getWinner()}`;
+
+    //Reveal player standings
+    const { player1, player2 } = gameManager.getPlayers();
+    const playerScores = document.querySelector("#end-result p");
+    playerScores.textContent = `${player1.getPlayerName()} - ${player1.getScore()} \t ${player2.getPlayerName()} - ${player2.getScore()}  `;
   };
   const removeResults = () => {
     endGamePanel.style.display = "none";
